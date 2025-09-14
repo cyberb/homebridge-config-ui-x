@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
+import { authenticate as ldapAuthenticate } from 'ldap-authentication'
 
 import {
   BadRequestException,
@@ -44,6 +45,25 @@ export class AuthService {
    */
   async authenticate(username: string, password: string, otp?: string): Promise<any> {
     try {
+      let options = {
+        ldapOpts: {
+          url: 'ldap://localhost',
+          // tlsOptions: { rejectUnauthorized: false }
+        },
+        adminDn: 'cn=admin,dc=syncloud,dc=org',
+        adminPassword: 'syncloud',
+        userPassword: password,
+        userSearchBase: 'ou=users,dc=syncloud,dc=org',
+        usernameAttribute: 'cn',
+        username: username,
+        attributes: ['cn'],
+      }
+      let ldapUser = await ldapAuthenticate(options)
+      if (!ldapUser) {
+        this.logger.warn('Failed ldap login.')
+        throw new ForbiddenException()
+      }
+
       const user = await this.findByUsername(username)
 
       if (!user) {
