@@ -604,6 +604,8 @@ export class HomebridgeServiceHelper {
    * Finds the homebridge binary
    */
   private async findHomebridgePath() {
+    this.homebridgeModulePath = '/snap/homebridge/current/backend/node_modules/homebridge'
+
     // Check the folder directly above
     const nodeModules = resolve(process.env.UIX_BASE_PATH, '..')
     if (await pathExists(resolve(nodeModules, 'homebridge', 'package.json'))) {
@@ -1385,3 +1387,4 @@ function bootstrap() {
 }
 
 bootstrap()
+
