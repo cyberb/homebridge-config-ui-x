@@ -138,8 +138,8 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   app.useGlobalFilters(new SpaFilter())
 
   logger.warn(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
-  await app.listen(configService.ui.port, startupConfig.host)
-
+  // await app.listen(configService.ui.port, startupConfig.host)
+  await app.listen({path: "/var/snap/homebridge/common/web.socket"})
   return app
 }
 

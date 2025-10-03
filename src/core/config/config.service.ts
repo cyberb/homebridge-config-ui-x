@@ -349,7 +349,7 @@ export class ConfigService {
   private setConfig() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1')
     this.ui.restart = undefined
-    this.ui.sudo = (platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || platform() === 'freebsd'
+    this.ui.sudo = Boolean(process.env.HOMEBRIDGE_CONFIG_UI_SUDO !== '0') && (platform() === 'linux' && !this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode) || platform() === 'freebsd'
     this.ui.log = {
       method: 'native',
       path: resolve(this.storagePath, 'homebridge.log'),

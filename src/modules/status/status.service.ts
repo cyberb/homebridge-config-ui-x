@@ -522,7 +522,7 @@ export class StatusService {
         latestVersion,
         updateAvailable,
         showNodeUnsupportedWarning,
-        installPath: dirname(process.execPath),
+        installPath: process.env.UIX_CUSTOM_NODEJS_PATH ?? dirname(process.execPath),
         npmVersion,
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 86400)

@@ -402,7 +402,7 @@ export class HomebridgeServiceHelper {
 
       // Log os info
       this.logger(`OS: ${type()} ${release()} ${arch()}.`)
-      this.logger(`Node.js ${process.version} ${process.execPath}.`)
+      this.logger(`Node.js ${process.version} ${process.env.UIX_CUSTOM_NODEJS_PATH ?? process.execPath}.`)
 
       // Work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath()
@@ -496,6 +496,7 @@ export class HomebridgeServiceHelper {
     const childProcessOpts: ForkOptions = {
       env,
       silent: true,
+      execPath: process.env.UIX_CUSTOM_NODEJS_PATH ?? process.execPath
     }
 
     // Spawn homebridge as a different user (probably for docker)
@@ -604,6 +605,8 @@ export class HomebridgeServiceHelper {
    * Finds the homebridge binary
    */
   private async findHomebridgePath() {
+    this.homebridgeModulePath = '/snap/homebridge/current/backend/node_modules/homebridge'
+
     // Check the folder directly above
     const nodeModules = resolve(process.env.UIX_BASE_PATH, '..')
     if (await pathExists(resolve(nodeModules, 'homebridge', 'package.json'))) {

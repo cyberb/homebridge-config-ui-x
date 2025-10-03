@@ -841,7 +841,7 @@ export class ServerService {
     return new Promise((res) => {
       let result = false
 
-      const child = spawn(process.execPath, ['-v'], { shell: true })
+      const child = spawn(process.env.UIX_CUSTOM_NODEJS_PATH ?? process.execPath, ['-v'], { shell: true })
 
       child.stdout.once('data', (data) => {
         result = data.toString().trim() !== process.version

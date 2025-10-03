@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
+import { authenticate as ldapAuthenticate } from 'ldap-authentication'
 
 import {
   BadRequestException,
@@ -44,29 +45,30 @@ export class AuthService {
    */
   async authenticate(username: string, password: string, otp?: string): Promise<any> {
     try {
-      const user = await this.findByUsername(username)
-
-      if (!user) {
+      let options = {
+        ldapOpts: {
+          url: 'ldap://localhost',
+          // tlsOptions: { rejectUnauthorized: false }
+        },
+        adminDn: 'cn=admin,dc=syncloud,dc=org',
+        adminPassword: 'syncloud',
+        userPassword: password,
+        userSearchBase: 'ou=users,dc=syncloud,dc=org',
+        usernameAttribute: 'cn',
+        username: username,
+        attributes: ['cn'],
+      }
+      let ldapUser = await ldapAuthenticate(options)
+      if (!ldapUser) {
+        this.logger.warn('Failed ldap login.')
         throw new ForbiddenException()
       }
 
-      await this.checkPassword(user, password)
-
-      if (user.otpActive && !otp) {
-        throw new HttpException('2FA Code Required', 412)
-      }
-
-      if (user.otpActive && !this.verifyOtpToken(user, otp)) {
-        throw new HttpException('2FA Code Invalid', 412)
-      }
-
-      if (user) {
-        return {
-          username: user.username,
-          name: user.name,
-          admin: user.admin,
-          instanceId: this.configService.instanceId,
-        }
+      return {
+        username: username,
+        name: username,
+        admin: true, //TODO: get from ldap
+        instanceId: this.configService.instanceId,
       }
     } catch (e) {
       if (e instanceof ForbiddenException) {

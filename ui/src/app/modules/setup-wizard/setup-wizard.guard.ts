@@ -16,9 +16,9 @@ export class SetupWizardGuard implements CanActivate {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
-    if (this.$settings.env.setupWizardComplete === false) {
-      return true
-    }
+    // if (this.$settings.env.setupWizardComplete === false) {
+    //   return true
+    // }
 
     this.$router.navigate(['/'])
     return true

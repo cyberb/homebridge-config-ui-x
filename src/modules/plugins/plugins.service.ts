@@ -1551,7 +1551,7 @@ export class PluginsService {
       // Do a pre-check to test for write access when not using sudo mode
       let npmInstallPath: string
       try {
-        npmInstallPath = execSync('npm root -g').toString().trim()
+        npmInstallPath = this.configService.customPluginPath
       } catch (e) {
         npmInstallPath = resolve(cwd, 'node_modules')
       }
